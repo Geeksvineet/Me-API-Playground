@@ -15,7 +15,7 @@ app.get("/health", (req,res) =>{
 app.use(cors({
     origin: [
       "http://localhost:5173", 
-      "https://me-api-playground-pcj54muf2-shubhamgarg44s-projects.vercel.app"
+      "https://me-api-playground-project.onrender.com"
     ],
     credentials: true,
   }));
