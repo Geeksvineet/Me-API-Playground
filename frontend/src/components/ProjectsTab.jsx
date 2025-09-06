@@ -51,6 +51,7 @@ export default function ProjectsTab({ profile }) {
       } else {
         // agar skill search karni hai (yahan tum decide kar sakte ho)
         res = await axios.get(`${API}/projects?q=${search}`);
+        // console.log(res.data.length)
         if (res.data.length === 0) {
           // agar title/desc search se kuch nahi mila, skill search karo
           res = await axios.get(`${API}/projects?skills=${search}`);

@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
 
 // GET top skills
 router.get("/top", async (req, res) => {
-  const skills = await Skill.find().sort({ level: -1 }).limit(1);
+  const skills = await Skill.find().sort({ level: 1 }).limit(1);
   res.json(skills);
 });
 

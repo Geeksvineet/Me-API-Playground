@@ -5,14 +5,41 @@ const router = express.Router();
 
 // GET all projects (with search)
 router.get("/", async (req, res) => {
-  const { q, skill } = req.query;
+  const { q, skills } = req.query;
   let filter = {};
-  if (skill) filter.skills = skill;
-  if (q) filter.title = { $regex: q, $options: "i" };
 
-  const projects = await Project.find(filter);
-  res.json(projects);
+  if (q) {
+    // title or description regex search
+    filter.$or = [
+      { title: { $regex: q, $options: "i" } },
+      { description: { $regex: q, $options: "i" } },
+    ];
+  }
+
+  if (skills) {
+    // skills array ke andar match karna
+    filter.skills = { $regex: skills, $options: "i" };
+  }
+
+  try {
+    const projects = await Project.find(filter);
+    res.json(projects);
+  } catch (err) {
+    console.error("❌ Error fetching projects:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
+
+// GET all projects (with search)
+// router.get("/", async (req, res) => {
+//   const { q, skill } = req.query;
+//   let filter = {};
+//   if (skill) filter.skills = skill;
+//   if (q) filter.title = { $regex: q, $options: "i" };
+
+//   const projects = await Project.find(filter);
+//   res.json(projects);
+// });
 
 // POST new project
 router.post("/", async (req, res) => {
@@ -27,7 +54,9 @@ router.post("/", async (req, res) => {
 
 // PUT project (by ID)
 router.put("/:id", async (req, res) => {
-  const updated = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  const updated = await Project.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
   res.json(updated);
 });
 

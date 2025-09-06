@@ -13,7 +13,7 @@ export default function ProfileTab({ profile, setProfile }) {
     education: profile?.education || "",
     github: profile?.links?.github || "",
     linkedin: profile?.links?.linkedin || "",
-    portfolio: profile?.links?.portfolio || ""
+    portfolio: profile?.links?.portfolio || "",
   });
 
   const API = import.meta.env.VITE_API_URL;
@@ -29,13 +29,16 @@ export default function ProfileTab({ profile, setProfile }) {
         links: {
           github: form.github,
           linkedin: form.linkedin,
-          portfolio: form.portfolio
-        }
+          portfolio: form.portfolio,
+        },
       });
       setProfile(res.data);
       setCreating(false);
     } catch (err) {
-      console.error("❌ Create profile failed:", err.response?.data || err.message);
+      console.error(
+        "❌ Create profile failed:",
+        err.response?.data || err.message
+      );
     }
   };
 
@@ -50,24 +53,36 @@ export default function ProfileTab({ profile, setProfile }) {
         links: {
           github: form.github,
           linkedin: form.linkedin,
-          portfolio: form.portfolio
-        }
+          portfolio: form.portfolio,
+        },
       });
       setProfile(res.data);
       setEditing(false);
     } catch (err) {
-      console.error("❌ Update profile failed:", err.response?.data || err.message);
+      console.error(
+        "❌ Update profile failed:",
+        err.response?.data || err.message
+      );
     }
   };
 
   // Delete profile
   const deleteProfile = async () => {
     try {
+      const confirmDelete = window.confirm(
+        "⚠️ Are you sure you want to delete your profile? This action cannot be undone."
+      );
+
+      if (!confirmDelete) return; // agar user ne cancel kiya to function yahin se return ho jaayega
+
       await axios.delete(`${API}/profile`);
       setProfile(null);
       window.location.reload(); // also clears skills/projects cascade
     } catch (err) {
-      console.error("❌ Delete profile failed:", err.response?.data || err.message);
+      console.error(
+        "❌ Delete profile failed:",
+        err.response?.data || err.message
+      );
     }
   };
 
@@ -78,10 +93,19 @@ export default function ProfileTab({ profile, setProfile }) {
       {/* No Profile → Show Create Button */}
       {!profile ? (
         <div className="text-center">
-          <p className="text-gray-800 mb-4">⚠️ No profile found. Please create one.</p>
+          <p className="text-gray-800 mb-4">
+            ⚠️ No profile found. Please create one.
+          </p>
           <button
             onClick={() => {
-              setForm({ name: "", email: "", education: "", github: "", linkedin: "", portfolio: "" });
+              setForm({
+                name: "",
+                email: "",
+                education: "",
+                github: "",
+                linkedin: "",
+                portfolio: "",
+              });
               setCreating(true);
             }}
             className="bg-purple-600 px-4 py-2 rounded-lg text-white hover:bg-purple-700 transition"
@@ -114,20 +138,32 @@ export default function ProfileTab({ profile, setProfile }) {
             {/* Links */}
             <div className="flex gap-4 mt-4">
               {profile.links?.github && (
-                <a href={profile.links.github} target="_blank" rel="noreferrer"
-                   className="px-4 py-2 bg-gray-800/70 text-white rounded-lg shadow hover:bg-black transition">
+                <a
+                  href={profile.links.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2 bg-gray-800/70 text-white rounded-lg shadow hover:bg-black transition"
+                >
                   GitHub
                 </a>
               )}
               {profile.links?.linkedin && (
-                <a href={profile.links.linkedin} target="_blank" rel="noreferrer"
-                   className="px-4 py-2 bg-blue-600/80 text-white rounded-lg shadow hover:bg-blue-700 transition">
+                <a
+                  href={profile.links.linkedin}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2 bg-blue-600/80 text-white rounded-lg shadow hover:bg-blue-700 transition"
+                >
                   LinkedIn
                 </a>
               )}
               {profile.links?.portfolio && (
-                <a href={profile.links.portfolio} target="_blank" rel="noreferrer"
-                   className="px-4 py-2 bg-green-600/80 text-white rounded-lg shadow hover:bg-green-700 transition">
+                <a
+                  href={profile.links.portfolio}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2 bg-green-600/80 text-white rounded-lg shadow hover:bg-green-700 transition"
+                >
                   Portfolio
                 </a>
               )}
@@ -143,7 +179,7 @@ export default function ProfileTab({ profile, setProfile }) {
                     education: profile.education || "",
                     github: profile.links?.github || "",
                     linkedin: profile.links?.linkedin || "",
-                    portfolio: profile.links?.portfolio || ""
+                    portfolio: profile.links?.portfolio || "",
                   });
                   setEditing(true);
                 }}
@@ -165,26 +201,48 @@ export default function ProfileTab({ profile, setProfile }) {
       {/* Create Profile Modal */}
       <Modal show={creating} onClose={() => setCreating(false)}>
         <h2 className="text-xl font-bold mb-4">➕ Create Profile</h2>
-        <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-          placeholder="Name" required
-          className="border p-2 rounded w-full mb-3 bg-black/30 text-white" />
-        <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-          placeholder="Email" required
-          className="border p-2 rounded w-full mb-3 bg-black/30 text-white" />
-        <input value={form.education} onChange={(e) => setForm({ ...form, education: e.target.value })}
+        <input
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          placeholder="Name"
+          required
+          className="border p-2 rounded w-full mb-3 bg-black/30 text-white"
+        />
+        <input
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          placeholder="Email"
+          required
+          className="border p-2 rounded w-full mb-3 bg-black/30 text-white"
+        />
+        <input
+          value={form.education}
+          onChange={(e) => setForm({ ...form, education: e.target.value })}
           placeholder="Education"
-          className="border p-2 rounded w-full mb-3 bg-black/30 text-white" />
-        <input value={form.github} onChange={(e) => setForm({ ...form, github: e.target.value })}
+          className="border p-2 rounded w-full mb-3 bg-black/30 text-white"
+        />
+        <input
+          value={form.github}
+          onChange={(e) => setForm({ ...form, github: e.target.value })}
           placeholder="GitHub"
-          className="border p-2 rounded w-full mb-3 bg-black/30 text-white" />
-        <input value={form.linkedin} onChange={(e) => setForm({ ...form, linkedin: e.target.value })}
+          className="border p-2 rounded w-full mb-3 bg-black/30 text-white"
+        />
+        <input
+          value={form.linkedin}
+          onChange={(e) => setForm({ ...form, linkedin: e.target.value })}
           placeholder="LinkedIn"
-          className="border p-2 rounded w-full mb-3 bg-black/30 text-white" />
-        <input value={form.portfolio} onChange={(e) => setForm({ ...form, portfolio: e.target.value })}
+          className="border p-2 rounded w-full mb-3 bg-black/30 text-white"
+        />
+        <input
+          value={form.portfolio}
+          onChange={(e) => setForm({ ...form, portfolio: e.target.value })}
           placeholder="Portfolio"
-          className="border p-2 rounded w-full mb-3 bg-black/30 text-white" />
-        <button onClick={createProfile}
-          className="bg-green-600 px-4 py-2 rounded text-white hover:bg-green-700 transition">
+          className="border p-2 rounded w-full mb-3 bg-black/30 text-white"
+        />
+        <button
+          onClick={createProfile}
+          className="bg-green-600 px-4 py-2 rounded text-white hover:bg-green-700 transition"
+        >
           Create
         </button>
       </Modal>
@@ -192,26 +250,48 @@ export default function ProfileTab({ profile, setProfile }) {
       {/* Edit Profile Modal */}
       <Modal show={editing} onClose={() => setEditing(false)}>
         <h2 className="text-xl font-bold mb-4">✏️ Edit Profile</h2>
-        <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-          placeholder="Name" required
-          className="border p-2 rounded w-full mb-3 bg-black/30 text-white" />
-        <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-          placeholder="Email" required
-          className="border p-2 rounded w-full mb-3 bg-black/30 text-white" />
-        <input value={form.education} onChange={(e) => setForm({ ...form, education: e.target.value })}
+        <input
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          placeholder="Name"
+          required
+          className="border p-2 rounded w-full mb-3 bg-black/30 text-white"
+        />
+        <input
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          placeholder="Email"
+          required
+          className="border p-2 rounded w-full mb-3 bg-black/30 text-white"
+        />
+        <input
+          value={form.education}
+          onChange={(e) => setForm({ ...form, education: e.target.value })}
           placeholder="Education"
-          className="border p-2 rounded w-full mb-3 bg-black/30 text-white" />
-        <input value={form.github} onChange={(e) => setForm({ ...form, github: e.target.value })}
+          className="border p-2 rounded w-full mb-3 bg-black/30 text-white"
+        />
+        <input
+          value={form.github}
+          onChange={(e) => setForm({ ...form, github: e.target.value })}
           placeholder="GitHub"
-          className="border p-2 rounded w-full mb-3 bg-black/30 text-white" />
-        <input value={form.linkedin} onChange={(e) => setForm({ ...form, linkedin: e.target.value })}
+          className="border p-2 rounded w-full mb-3 bg-black/30 text-white"
+        />
+        <input
+          value={form.linkedin}
+          onChange={(e) => setForm({ ...form, linkedin: e.target.value })}
           placeholder="LinkedIn"
-          className="border p-2 rounded w-full mb-3 bg-black/30 text-white" />
-        <input value={form.portfolio} onChange={(e) => setForm({ ...form, portfolio: e.target.value })}
+          className="border p-2 rounded w-full mb-3 bg-black/30 text-white"
+        />
+        <input
+          value={form.portfolio}
+          onChange={(e) => setForm({ ...form, portfolio: e.target.value })}
           placeholder="Portfolio"
-          className="border p-2 rounded w-full mb-3 bg-black/30 text-white" />
-        <button onClick={saveEdit}
-          className="bg-purple-600 px-4 py-2 rounded text-white hover:bg-purple-700 transition">
+          className="border p-2 rounded w-full mb-3 bg-black/30 text-white"
+        />
+        <button
+          onClick={saveEdit}
+          className="bg-purple-600 px-4 py-2 rounded text-white hover:bg-purple-700 transition"
+        >
           Save
         </button>
       </Modal>
