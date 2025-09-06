@@ -29,19 +29,19 @@ export default function App() {
             <h1 className="text-2xl font-bold mb-10 tracking-wide">👤 Vineet Suman</h1>
             <nav className="space-y-4">
               <button onClick={() => setTab("profile")}
-                className={`block w-full text-left px-3 py-2 rounded-lg transition ${tab === "profile" ? "bg-purple-600/70" : "hover:bg-purple-500/20"}`}>
+                className={`block w-full text-left px-3 py-2 rounded-lg transition ${tab === "profile" ? "bg-purple-600/70 text-white" : "hover:bg-purple-500/20"}`}>
                 👤 Profile
               </button>
               <button onClick={() => setTab("skills")}
-                className={`block w-full text-left px-3 py-2 rounded-lg transition ${tab === "skills" ? "bg-purple-600/70" : "hover:bg-purple-500/20"}`}>
+                className={`block w-full text-left px-3 py-2 rounded-lg transition ${tab === "skills" ? "bg-purple-600/70 text-white" : "hover:bg-purple-500/20"}`}>
                 💡 Skills
               </button>
               <button onClick={() => setTab("projects")}
-                className={`block w-full text-left px-3 py-2 rounded-lg transition ${tab === "projects" ? "bg-purple-600/70" : "hover:bg-purple-500/20"}`}>
+                className={`block w-full text-left px-3 py-2 rounded-lg transition ${tab === "projects" ? "bg-purple-600/70 text-white" : "hover:bg-purple-500/20"}`}>
                 📂 Projects
               </button>
               <button onClick={() => setTab("apiExplorer")}
-                className={`block w-full text-left px-3 py-2 rounded-lg transition ${tab === "projects" ? "bg-purple-600/70" : "hover:bg-purple-500/20"}`}>
+                className={`block w-full text-left px-3 py-2 rounded-lg transition ${tab === "apiExplorer" ? "bg-purple-600/70 text-white" : "hover:bg-purple-500/20"}`}>
                 &lt;/&gt; API Explorer
               </button>
             </nav>

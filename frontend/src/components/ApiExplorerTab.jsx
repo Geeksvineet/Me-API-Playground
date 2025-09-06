@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Play, Copy, Check, Code, Database } from "lucide-react";
 
-const BASE_URL = "http://localhost:5000"; // 👈 apna base URL yahan daal do
+const BASE_URL = "https://me-api-playground-r3ox.onrender.com"; // 👈 apna base URL yahan daal do
 
 const apiDocs = [
   {
@@ -11,23 +11,28 @@ const apiDocs = [
   },
   {
     method: "GET",
-    path: "/api/users",
-    description: "Fetch all users",
+    path: "/profile",
+    description: "Fetch profile details",
   },
   {
     method: "GET",
-    path: "/api/users/:id",
-    description: "Fetch a single user by ID",
+    path: "/skills",
+    description: "Fetch all Skills",
   },
   {
     method: "GET",
-    path: "/api/projects",
+    path: "/skills/top",
+    description: "Fetch toppest skill",
+  },
+  {
+    method: "GET",
+    path: "/projects",
     description: "Fetch all projects",
   },
   {
     method: "GET",
-    path: "/api/projects/:id",
-    description: "Fetch a single project by ID",
+    path: "/projects?skills={skillName}",
+    description: "Fetch all projects on basis of specific skill",
   },
 ];
 
@@ -36,6 +41,7 @@ export default function ApiDocsAndExplorer() {
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copiedURL, setCopiedURL] = useState(false);
 
   const handleFetch = async () => {
     if (!endpoint) return;
@@ -56,18 +62,43 @@ export default function ApiDocsAndExplorer() {
     if (response) {
       navigator.clipboard.writeText(JSON.stringify(response, null, 2));
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), 1000);
+    }
+  };
+
+  const handleCopyURL = async () => {
+    try {
+      await navigator.clipboard.writeText(BASE_URL);
+      setCopiedURL(true);
+      setTimeout(() => setCopiedURL(false), 1000);
+    } catch (err) {
+      console.error("Failed to copy: ", err);
     }
   };
 
   return (
     <div className="max-w-7xl mx-auto p-6">
       {/* Base URL */}
-      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h2 className="text-lg font-semibold text-blue-700">
+      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-blue-700 flex items-center gap-2">
           🔗 Base URL:{" "}
           <span className="font-mono text-gray-800">{BASE_URL}</span>
         </h2>
+
+        <button
+          onClick={handleCopyURL}
+          className="ml-4 flex items-center gap-2 px-3 py-1 rounded-md border border-blue-400 bg-blue-100 hover:bg-blue-200 text-blue-700 transition"
+        >
+          {copiedURL ? (
+            <>
+              <Check size={16} /> Copied!
+            </>
+          ) : (
+            <>
+              <Copy size={16} /> Copy
+            </>
+          )}
+        </button>
       </div>
 
       {/* Two Column Layout */}
@@ -149,7 +180,7 @@ export default function ApiDocsAndExplorer() {
                     {api.method}
                   </span>
                   <span className="font-mono text-gray-700">
-                    {BASE_URL}
+                    {/* {BASE_URL} */}
                     {api.path}
                   </span>
                 </div>

@@ -16,7 +16,7 @@ A full-stack **MERN** playground to manage and showcase your developer profile v
   Add, edit, and delete skills. Includes proficiency level & progress bar UI.
 
 - **Search & Query Support:**  
-  - `GET /projects?q=react` (search projects by keyword)  
+  - `GET /projects?skills=react` (search projects by keyword)  
   - `GET /skills/top` (get top skills)  
   - `GET /health` (liveness/health check endpoint)
 
@@ -34,8 +34,8 @@ A full-stack **MERN** playground to manage and showcase your developer profile v
 - **Backend:** Node.js, Express.js  
 - **Database:** MongoDB Atlas (via Mongoose)
 - **Hosting:**  
-  - Frontend: [Vercel](http://localhost:5173/)  
-  - Backend: [Render](http://localhost:4000/)  
+  - Frontend: [Render](https://me-api-playground-project.onrender.com)  
+  - Backend: [Render](https://me-api-playground-r3ox.onrender.com)  
 
 ---
 
@@ -101,8 +101,8 @@ A full-stack **MERN** playground to manage and showcase your developer profile v
 
 ### 🔹 Production
 
-- **Frontend:** [Vercel Live]()
-- **Backend:** [Render Live]()
+- **Frontend:** [Render Live](https://me-api-playground-project.onrender.com)
+- **Backend:** [Render Live](https://me-api-playground-r3ox.onrender.com)
 - **Health Check:** `/health` endpoint
 
 ---
@@ -154,6 +154,6 @@ A full-stack **MERN** playground to manage and showcase your developer profile v
 
 ## 🔗 Live Playground
 
-👉 []()
+👉 [Deploy Link](https://me-api-playground-project.onrender.com)
 
 ---

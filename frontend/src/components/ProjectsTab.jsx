@@ -6,11 +6,13 @@ import Modal from "./model";
 export default function ProjectsTab({ profile }) {
   const [projects, setProjects] = useState([]);
   const [search, setSearch] = useState("");
+  const [skills, setSkills] = useState([]);
   const [newProject, setNewProject] = useState({
     title: "",
     description: "",
     github: "",
     demo: "",
+    skills: [],
   });
   const [editing, setEditing] = useState(null);
   const [editForm, setEditForm] = useState({
@@ -23,12 +25,42 @@ export default function ProjectsTab({ profile }) {
   const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
+    const fetchSkills = async () => {
+      try {
+        const res = await fetch(`${API}/skills`);
+        const data = await res.json();
+        setSkills(data);
+      } catch (err) {
+        console.error("Error fetching skills:", err);
+      }
+    };
+    fetchSkills();
+  }, []);
+
+  useEffect(() => {
     axios.get(`${API}/projects`).then((res) => setProjects(res.data));
   }, []);
 
   const searchProjects = async () => {
-    const res = await axios.get(`${API}/projects?q=${search}`);
-    setProjects(res.data);
+    try {
+      let res;
+
+      if (search.trim() === "") {
+        // agar empty search hai to sab projects lao
+        res = await axios.get(`${API}/projects`);
+      } else {
+        // agar skill search karni hai (yahan tum decide kar sakte ho)
+        res = await axios.get(`${API}/projects?q=${search}`);
+        if (res.data.length === 0) {
+          // agar title/desc search se kuch nahi mila, skill search karo
+          res = await axios.get(`${API}/projects?skills=${search}`);
+        }
+      }
+
+      setProjects(res.data);
+    } catch (err) {
+      console.error("❌ Error searching projects:", err);
+    }
   };
 
   const fetchAllProjects = async () => {
@@ -42,11 +74,17 @@ export default function ProjectsTab({ profile }) {
       const res = await axios.post(`${API}/projects`, {
         title: newProject.title,
         description: newProject.description,
-        skills: [],
+        skills: newProject.skills,
         links: { github: newProject.github, demo: newProject.demo },
       });
       setProjects([...projects, res.data]);
-      setNewProject({ title: "", description: "", github: "", demo: "" });
+      setNewProject({
+        title: "",
+        description: "",
+        skills: [],
+        github: "",
+        demo: "",
+      });
     } catch (err) {
       console.error(
         "❌ Error adding project:",
@@ -67,6 +105,7 @@ export default function ProjectsTab({ profile }) {
       description: proj.description,
       github: proj.links?.github || "",
       demo: proj.links?.demo || "",
+      skills: proj.skills || [], // ✅ empty array agar skills na mile
     });
   };
 
@@ -75,7 +114,9 @@ export default function ProjectsTab({ profile }) {
       title: editForm.title,
       description: editForm.description,
       links: { github: editForm.github, demo: editForm.demo },
+      skills: editForm.skills, // ✅ send skills also
     });
+
     setProjects(projects.map((p) => (p._id === editing._id ? res.data : p)));
     setEditing(null);
   };
@@ -95,7 +136,7 @@ export default function ProjectsTab({ profile }) {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search projects..."
+              placeholder="Search across projects and Skills..."
               className="flex-1 p-2 rounded bg-black/30 text-black"
             />
             <button
@@ -133,10 +174,13 @@ export default function ProjectsTab({ profile }) {
 
                   {/* Project Content */}
                   <div className="relative z-10">
-                    <h3 className="text-lg font-semibold text-black">
+                    <h3 className="text-xl font-semibold text-black">
                       {p.title}
                     </h3>
                     <p className="text-gray-700 mt-2">{p.description}</p>
+                    <h2 className="text-lg font-semibold text-blue-700">
+                      {p.skills.join(", ")}
+                    </h2>
 
                     <div className="flex gap-3 mt-3">
                       {p.links?.github && (
@@ -201,6 +245,44 @@ export default function ProjectsTab({ profile }) {
               placeholder="Description"
               className="p-2 rounded w-full mb-2 bg-black/30 text-black"
             />
+            <div className="mb-4">
+              <label className="block font-semibold text-gray-800 mb-2 text-lg">
+                Select Skills
+              </label>
+              <div className="flex flex-wrap gap-3">
+                {skills.map((skill) => {
+                  const isSelected = newProject.skills.includes(skill.name);
+                  return (
+                    <button
+                      type="button"
+                      key={skill._id}
+                      onClick={() => {
+                        if (isSelected) {
+                          setNewProject((prev) => ({
+                            ...prev,
+                            skills: prev.skills.filter((s) => s !== skill.name),
+                          }));
+                        } else {
+                          setNewProject((prev) => ({
+                            ...prev,
+                            skills: [...prev.skills, skill.name],
+                          }));
+                        }
+                      }}
+                      className={`px-4 py-2 rounded-full border text-sm font-medium transition-all duration-200
+            ${
+              isSelected
+                ? "bg-blue-600 text-white border-blue-600 shadow-md"
+                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+            }`}
+                    >
+                      {skill.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <input
               value={newProject.github}
               onChange={(e) =>
@@ -256,6 +338,45 @@ export default function ProjectsTab({ profile }) {
               }
               className="border p-2 rounded w-full mb-3 bg-black/30 text-white"
             />
+            <div className="mb-4">
+              <label className="block font-semibold text-gray-200 mb-2">
+                Select Skills
+              </label>
+              <div className="flex flex-wrap gap-3">
+                {skills.map((skill) => {
+                  const isSelected = (editForm.skills || []).includes(
+                    skill.name
+                  ); // ✅ safe check
+                  return (
+                    <button
+                      type="button"
+                      key={skill._id}
+                      onClick={() => {
+                        if (isSelected) {
+                          setEditForm((prev) => ({
+                            ...prev,
+                            skills: prev.skills.filter((s) => s !== skill.name),
+                          }));
+                        } else {
+                          setEditForm((prev) => ({
+                            ...prev,
+                            skills: [...prev.skills, skill.name],
+                          }));
+                        }
+                      }}
+                      className={`px-4 py-2 rounded-full border text-sm font-medium transition-all duration-200
+        ${
+          isSelected
+            ? "bg-blue-600 text-white border-blue-600 shadow-md"
+            : "bg-white/20 text-gray-200 border-gray-400 hover:bg-white/30"
+        }`}
+                    >
+                      {skill.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
             <button
               onClick={saveEdit}
               className="bg-purple-600 px-4 py-2 rounded hover:bg-purple-700 transition"
